@@ -16,9 +16,7 @@ with open(pathlib.Path(__file__).parent / "apimoex" / "__init__.py") as file:
     except IndexError:
         raise RuntimeError("Unable to determine version.")
 
-with open("README.rst") as file:
-    long_description = file.read()
-
+long_description = pathlib.Path("README.rst").read_text()
 setuptools.setup(
     name=name,
     version=version,
