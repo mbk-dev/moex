@@ -36,7 +36,7 @@ def test_make_query_full():
     assert query["interval"] == 60
     assert query["from"] == "2019-10-09"
     assert query["till"] == "2019-11-12"
-    assert query["iss.only"] == f"new_table,history.cursor"
+    assert query["iss.only"] == "new_table,history.cursor"
     assert query["new_table.columns"] == "4,a"
 
 
