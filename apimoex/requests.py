@@ -541,6 +541,46 @@ def get_board_history(
     return _get_long_data(session, url, table, query)
 
 
+def get_index_history(
+    session: requests.Session,
+    index: str,
+    start: Optional[str] = None,
+    end: Optional[str] = None,
+    columns: Optional[Tuple[str, ...]] = (
+        "BOARDID",
+        "TRADEDATE",
+        "CLOSE",
+        "VOLUME",
+        "VALUE",
+    ),
+):
+    """Получить историю для указанного индекса за указанный интервал дат.
+
+    Описание запроса - https://iss.moex.com/iss/reference/65
+
+    :param session:
+        Сессия интернет соединения.
+    :param index:
+        Тикер биржевого индекса.
+    :param start:
+        Дата вида ГГГГ-ММ-ДД. При отсутствии данные будут загружены с начала истории.
+    :param end:
+        Дата вида ГГГГ-ММ-ДД. При отсутствии данные будут загружены до конца истории.
+    :param columns:
+        Кортеж столбцов, которые нужно загрузить - по умолчанию режим торгов, дата торгов, цена закрытия и объем в
+        штуках и стоимости. Если пустой или None, то загружаются все столбцы.
+
+    :return:
+        Список словарей, которые напрямую конвертируется в pandas.DataFrame.
+    """
+    url = (
+        f"https://iss.moex.com/iss/history/engines/stock/markets/index/securities/{index}.json"
+    )
+    table = "history"
+    query = _make_query(start=start, end=end, table=table, columns=columns)
+    return _get_long_data(session, url, table, query)
+
+
 def get_index_tickers(
     session: requests.Session,
     index: str,
