@@ -12,7 +12,7 @@ from typing import Union
 
 import requests
 
-from . import client
+import apimoex.client as client
 
 __all__ = [
     "get_reference",
@@ -27,6 +27,8 @@ __all__ = [
     "get_market_history",
     "get_board_history",
     "get_index_tickers",
+    "get_index_history",
+    "get_indexes_info",
 ]
 
 
@@ -445,6 +447,30 @@ def get_board_securities(
     return _get_short_data(session, url, table, query)
 
 
+def get_indexes_info(
+    session: requests.Session,
+    columns: Optional[Tuple[str, ...]] = ("SECID", "SHORTNAME", "LATNAME"),
+) -> List[Dict[str, Union[str, int, float]]]:
+    """Получить таблицу всех биржевых индексов.
+
+    Описание запроса - https://iss.moex.com/iss/reference/32
+
+    :param session:
+        Сессия интернет соединения.
+    :param columns:
+        Кортеж столбцов, которые нужно загрузить - по умолчанию тикер, номер государственно регистрации,
+        размер лота и краткое название. Если пустой или None, то загружаются все столбцы.
+
+    :return:
+        Список словарей, которые напрямую конвертируется в pandas.DataFrame.
+    """
+    url = "https://iss.moex.com/iss/securitygroups/stock_index/collections/stock_index_all/securities.json"
+
+    table = "securities"
+    query = _make_query(table=table, columns=columns)
+    return _get_long_data(session, url, table, query)
+
+
 def get_market_history(
     session: requests.Session,
     security: str,
@@ -546,13 +572,7 @@ def get_index_history(
     index: str,
     start: Optional[str] = None,
     end: Optional[str] = None,
-    columns: Optional[Tuple[str, ...]] = (
-        "BOARDID",
-        "TRADEDATE",
-        "CLOSE",
-        "VOLUME",
-        "VALUE",
-    ),
+    columns: Optional[Tuple[str, ...]] = None
 ):
     """Получить историю для указанного индекса за указанный интервал дат.
 
