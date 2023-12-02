@@ -449,7 +449,7 @@ def get_board_securities(
 
 def get_indexes_info(
     session: requests.Session,
-    columns: Optional[Tuple[str, ...]] = ("SECID", "SHORTNAME", "LATNAME"),
+    columns: Optional[Tuple[str, ...]] = None,
 ) -> List[Dict[str, Union[str, int, float]]]:
     """Получить таблицу всех биржевых индексов.
 
