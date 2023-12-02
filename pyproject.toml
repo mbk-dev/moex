@@ -6,7 +6,7 @@ authors = ["Sergey Kikevich <sergey@rostsber.ru>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<4.0.0"
 requests = "^2.31.0"
 pandas = "^2.1.2"
 
