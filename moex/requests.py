@@ -12,7 +12,7 @@ from typing import Union
 
 import requests
 
-import apimoex.client as client
+import moex.client as client
 
 __all__ = [
     "get_reference",

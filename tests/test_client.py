@@ -3,7 +3,7 @@ import typing
 import pytest
 import requests
 
-from apimoex import client
+from moex import client
 
 
 @pytest.fixture(scope="module", name="session")

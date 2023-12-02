@@ -3,8 +3,8 @@ import pandas as pd
 import pytest
 from requests import Session
 
-from apimoex import client
-from apimoex import requests
+from moex import client
+from moex import requests
 
 
 @pytest.fixture(scope="module", name="session")
