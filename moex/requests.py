@@ -453,7 +453,8 @@ def get_indexes_info(
 ) -> List[Dict[str, Union[str, int, float]]]:
     """Получить таблицу всех биржевых индексов.
 
-    Описание запроса - https://iss.moex.com/iss/reference/32
+    Основные поля:
+    "SECID", "LATNAME", "CURRENCYID", "FREQUENCY", "TYPE", "TYPENAME", "IS_TRADED", "CONSTITUENTS"
 
     :param session:
         Сессия интернет соединения.
