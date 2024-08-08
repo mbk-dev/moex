@@ -519,6 +519,8 @@ def get_market_history(
     query = _make_query(start=start, end=end, table=table, columns=columns)
     return _get_long_data(session, url, table, query)
 
+# TODO: add method for board history (for all securities)
+
 
 def get_board_history(
     session: requests.Session,
