@@ -298,5 +298,14 @@ def test_get_dividends(session):
     data = requests.get_dividends(session, "SBER")
     assert isinstance(data, list)
     assert len(data) > 0
-    assert data[0]["secid"] == "SBER"
-    assert "value" in data[0]
+    df = pd.DataFrame(data)
+    assert df.loc[0, "secid"] == "SBER"
+    assert "value" in df.columns
+    assert df.loc[0, "value"] == pytest.approx(16)
+
+
+def test_get_dividends_empty(session):
+    # Security that unlikely to have dividends in ISS format or doesn't exist
+    data = requests.get_dividends(session, "USD000000TOD")
+    assert isinstance(data, list)
+    assert len(data) == 0
