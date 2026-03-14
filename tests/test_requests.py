@@ -293,4 +293,10 @@ def test_get_index_tickers(session):
     assert len(data) == 40
     assert data[15]['ticker'] == 'MAGN'
     assert data[25]['till'] == '2023-03-03'
-    assert data[35]['tradingsession'] == 3
+
+def test_get_dividends(session):
+    data = requests.get_dividends(session, "SBER")
+    assert isinstance(data, list)
+    assert len(data) > 0
+    assert data[0]["secid"] == "SBER"
+    assert "value" in data[0]

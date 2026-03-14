@@ -4,6 +4,7 @@
     Полный перечень запросов https://iss.moex.com/iss/reference/
     Дополнительное описание https://fs.moex.com/files/6523
 """
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -29,6 +30,7 @@ __all__ = [
     "get_index_tickers",
     "get_index_history",
     "get_indexes_info",
+    "get_dividends",
 ]
 
 
@@ -645,3 +647,33 @@ def get_index_tickers(
     table = "tickers"
     query = _make_query(date=date, table=table, columns=columns)
     return _get_short_data(session, url, table, query)
+
+
+def get_dividends(
+    session: requests.Session,
+    security: str,
+    **kwargs: Any
+) -> List[Dict[str, Any]]:
+    """Получить историю выплаты дивидендов по конкретной бумаге.
+
+    Описание запроса - https://iss.moex.com/iss/reference/140
+
+    :param session:
+        Сессия интернет соединения.
+    :param security:
+        Тикер ценной бумаги.
+    :param kwargs:
+        Дополнительные параметры для запроса к MOEX ISS API.
+
+    :return:
+        Список словарей с данными о дивидендах.
+    """
+    url = f"https://iss.moex.com/iss/securities/{security}/dividends.json"
+
+    query = {"iss.meta": "off"}
+    query.update(kwargs)
+
+    iss = client.ISSClient(session, url, query)
+    res = iss.get()
+
+    return res.get("dividends", [])
