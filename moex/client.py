@@ -107,7 +107,8 @@ class ISSClient(abc.Iterable):
 
     def _make_query(self, start=None) -> Dict[str, Union[str, int]]:
         """К общему набору параметров запроса добавляется требование предоставить ответ в виде расширенного json."""
-        query = dict(**BASE_QUERY, **self._query)
+        query = BASE_QUERY.copy()
+        query.update(self._query)
         if start:
             query["start"] = start
         return query
