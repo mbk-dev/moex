@@ -669,11 +669,9 @@ def get_dividends(
         Список словарей с данными о дивидендах.
     """
     url = f"https://iss.moex.com/iss/securities/{security}/dividends.json"
+    table = "dividends"
 
-    query = {"iss.meta": "off"}
-    query.update(kwargs)
+    query = kwargs.copy()
+    query.update({"iss.meta": "off"})
 
-    iss = client.ISSClient(session, url, query)
-    res = iss.get()
-
-    return res.get("dividends", [])
+    return _get_short_data(session, url, table, query)
