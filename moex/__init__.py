@@ -5,25 +5,9 @@
 перечень доступных функций-запросов может быть легко расширен.
 """
 from .client import ISSClient
+from . import requests as _requests
 from .requests import *
 
-__all__ = [
-    "ISSClient",
-    "get_reference",
-    "find_securities",
-    "find_security_description",
-    "get_market_candle_borders",
-    "get_board_candle_borders",
-    "get_market_candles",
-    "get_board_candles",
-    "get_board_dates",
-    "get_board_securities",
-    "get_market_history",
-    "get_board_history",
-    "get_index_tickers",
-    "get_index_history",
-    "get_indexes_info",
-    "get_dividends",
-]
+__all__ = ["ISSClient", *_requests.__all__]
 
 __version__ = "1.3.0"
