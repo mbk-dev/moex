@@ -292,16 +292,15 @@ def test_get_index_tickers(session):
 
 def test_get_dividends(session):
     data = requests.get_dividends(session, "SBER")
-    assert isinstance(data, list)
-    assert len(data) > 0
-    df = pd.DataFrame(data)
-    assert df.loc[0, "secid"] == "SBER"
-    assert "value" in df.columns
-    assert df.loc[0, "value"] == pytest.approx(16)
+    assert isinstance(data, pd.Series)
+    assert not data.empty
+    assert data.index.min().year <= 2014
+    assert len(data) > 6
+    assert data.loc["2019-06-13"] == pytest.approx(16)
 
 
 def test_get_dividends_empty(session):
     # Security that unlikely to have dividends in ISS format or doesn't exist
     data = requests.get_dividends(session, "USD000000TOD")
-    assert isinstance(data, list)
-    assert len(data) == 0
+    assert isinstance(data, pd.Series)
+    assert data.empty
