@@ -11,6 +11,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+import pandas as pd
 import requests
 
 import moex.client as client
@@ -33,6 +34,7 @@ __all__ = [
     "get_dividends",
 ]
 
+url_securities = "https://iss.moex.com/iss/securities.json"
 
 def _make_query(
     *,
@@ -183,10 +185,9 @@ def find_securities(
     :return:
         Список словарей, которые напрямую конвертируется в pandas.DataFrame.
     """
-    url = "https://iss.moex.com/iss/securities.json"
     table = "securities"
     query = _make_query(q=string, table=table, columns=columns)
-    return _get_short_data(session, url, table, query)
+    return _get_short_data(session, url_securities, table, query)
 
 
 def find_security_description(
@@ -655,7 +656,7 @@ def get_dividends(
     session: requests.Session,
     security: str,
     **kwargs: Any
-) -> List[Dict[str, Any]]:
+) -> pd.Series:
     """Получить историю выплаты дивидендов по конкретной бумаге.
 
     Описание запроса - https://iss.moex.com/iss/reference/140
@@ -668,12 +669,52 @@ def get_dividends(
         Дополнительные параметры для запроса к MOEX ISS API.
 
     :return:
-        Список словарей с данными о дивидендах.
+        pandas.Series, где индексом является registryclosedate, а значением размер дивиденда.
     """
-    url = f"https://iss.moex.com/iss/securities/{security}/dividends.json"
-    table = "dividends"
+    description = find_security_description(session, security, columns=("name", "value"))
+    isin = next(
+        (row.get("value") for row in description if row.get("name") == "ISIN" and row.get("value")),
+        None,
+    )
+
+    securities = {security}
+    if isin:
+        rows = _get_short_data(
+            session,
+            url_securities,
+            "securities",
+            {"q": isin},
+        )
+        securities.update(
+            row["secid"]
+            for row in rows
+            if row.get("secid") and row.get("isin") == isin
+        )
 
     query = kwargs.copy()
     query.update({"iss.meta": "off"})
 
-    return _get_short_data(session, url, table, query)
+    all_dividends: List[Dict[str, Any]] = []
+    for secid in sorted(securities):
+        url = f"https://iss.moex.com/iss/securities/{secid}/dividends.json"
+        all_dividends.extend(_get_short_data(session, url, "dividends", query))
+
+    if not all_dividends:
+        return pd.Series(dtype="float64", name=security)
+
+    df = pd.DataFrame(all_dividends)
+    if "registryclosedate" not in df.columns or "value" not in df.columns:
+        return pd.Series(dtype="float64", name=security)
+
+    df["registryclosedate"] = pd.to_datetime(df["registryclosedate"], errors="coerce")
+    df["value"] = pd.to_numeric(df["value"], errors="coerce")
+    df = df.dropna(subset=["registryclosedate", "value"])
+    df = df.drop_duplicates(subset=["registryclosedate", "value"])
+    df = df.sort_values("registryclosedate")
+
+    if df.empty:
+        return pd.Series(dtype="float64", name=security)
+
+    series = pd.Series(df["value"].values, index=df["registryclosedate"], name=security)
+    series.index.name = "registryclosedate"
+    return series
