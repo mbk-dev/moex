@@ -1,7 +1,30 @@
-Python client for MOEX data API
-============
+# moex
 
-moex package allows to load Moscow exchange data from the official REST API.
+A Python client for Moscow Exchange ISS data. Search securities and retrieve market history, candles, index data and dividends
+as structured records that can be converted into pandas tables.
+
+## Install
+
+```bash
+pip install moex
+```
+
+## Quick start
+
+```python
+import moex
+import pandas as pd
+import requests
+
+with requests.Session() as session:
+    records = moex.find_securities(session, "SBER")
+    securities = pd.DataFrame(records)
+
+print(securities.head())
+```
+
+[Request helpers](moex/requests.py) · [ISS client](moex/client.py) ·
+[MOEX ISS reference](https://iss.moex.com/iss/reference/)
 
 <!-- okama-family:start -->
 ## Explore the okama family
