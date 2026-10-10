@@ -1,5 +1,7 @@
 # moex
 
+![moex — Moscow Exchange data for Python: securities, history and candles](docs/images/moex-hero.png)
+
 A Python client for Moscow Exchange ISS data. Search securities and retrieve market history, candles, index data and dividends
 as structured records that can be converted into pandas tables.
 
